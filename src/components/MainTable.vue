@@ -54,7 +54,7 @@
 import { 
   MDBTable
 } from "mdb-vue-ui-kit";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 const props = defineProps({
   tableData: {
@@ -62,5 +62,14 @@ const props = defineProps({
     required: true
   }
 });
-// ]);
+// make sure component emits selectPlayer event when a player name is clicked to parent
+// component
+// to display player details in Details.vue component
+const emit = defineEmits(['selectPlayer']);
+
+const tableData = ref(props.tableData);
+// Watch for changes in tableData prop
+watch(() => props.tableData, (newData) => {
+  tableData.value = newData;
+});
 </script>

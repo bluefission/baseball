@@ -24,4 +24,7 @@
     MDBNavbarItem
   } from "mdb-vue-ui-kit";
 
+  import { ref } from "vue";
+  const collapse1 = ref(false);
+  
 </script>

@@ -29,6 +29,7 @@
     "require": {
         "bluefission/develation": "^1.0.0-alpha",
         "bluefission/automata": "dev-master",
+        "symfony/http-client": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.1@dev",
@@ -42,6 +43,11 @@
     "autoload-dev": {
         "psr-4": { 
             "BlueFission\\baseball\\Tests\\": "tests/" 
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
         }
     }
 }
