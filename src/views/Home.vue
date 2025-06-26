@@ -1,9 +1,9 @@
 <template>
-  <HelloWorld
+  <Main
     msg="Thank you for using our product. We're glad you're with us."
   />
 </template>
 
 <script setup lang="ts">
-import HelloWorld from "../components/HelloWorld.vue";
+import Main from "../components/Main.vue";
 </script>
