@@ -6,7 +6,14 @@
       <!-- Player Name Full Width -->
       <MDBRow class="mb-3">
         <MDBCol>
-          <h4><strong>Player Name:</strong> {{ playerData['Player name'] }}</h4>
+          <h4><strong>Player Name:</strong> {{ playerData.player_name }}</h4>
+        </MDBCol>
+      </MDBRow>
+
+      <MDBRow class="mb-8">
+        <MDBCol>
+          <!-- notes area -->
+          <p><strong>Notes:</strong> {{ playerData.notes || 'No notes available.' }}</p>
         </MDBCol>
       </MDBRow>
 
@@ -14,25 +21,25 @@
       <MDBRow>
         <MDBCol md="6">
           <p><strong>Position:</strong> {{ playerData.position }}</p>
-          <p><strong>Games:</strong> {{ playerData.Games }}</p>
-          <p><strong>At-bat:</strong> {{ playerData['At-bat'] }}</p>
-          <p><strong>Runs:</strong> {{ playerData.Runs }}</p>
-          <p><strong>Hits:</strong> {{ playerData.Hits }}</p>
-          <p><strong>Double (2B):</strong> {{ playerData['Double (2B)'] }}</p>
-          <p><strong>Third Baseman:</strong> {{ playerData['third baseman'] }}</p>
-          <p><strong>Home Run:</strong> {{ playerData['home run'] }}</p>
+          <p><strong>Games:</strong> {{ playerData.games }}</p>
+          <p><strong>At-bat:</strong> {{ playerData.at_bat }}</p>
+          <p><strong>Runs:</strong> {{ playerData.runs }}</p>
+          <p><strong>Hits:</strong> {{ playerData.hits }}</p>
+          <p><strong>Double (2B):</strong> {{ playerData.double_2b }}</p>
+          <p><strong>Third Baseman:</strong> {{ playerData.third_baseman }}</p>
+          <p><strong>Home Run:</strong> {{ playerData.home_run }}</p>
         </MDBCol>
 
         <MDBCol md="6">
-          <p><strong>Run Batted In:</strong> {{ playerData['run batted in'] }}</p>
-          <p><strong>A Walk:</strong> {{ playerData['a walk'] }}</p>
-          <p><strong>Strikeouts:</strong> {{ playerData.Strikeouts }}</p>
-          <p><strong>Stolen Base:</strong> {{ playerData['stolen base'] }}</p>
-          <p><strong>Caught Stealing:</strong> {{ playerData['Caught stealing'] }}</p>
-          <p><strong>AVG:</strong> {{ playerData.AVG }}</p>
-          <p><strong>On-base Percentage:</strong> {{ playerData['On-base Percentage'] }}</p>
-          <p><strong>Slugging Percentage:</strong> {{ playerData['Slugging Percentage'] }}</p>
-          <p><strong>On-base Plus Slugging:</strong> {{ playerData['On-base Plus Slugging'] }}</p>
+          <p><strong>Run Batted In:</strong> {{ playerData.run_batted_in }}</p>
+          <p><strong>A Walk:</strong> {{ playerData.a_walk }}</p>
+          <p><strong>Strikeouts:</strong> {{ playerData.strikeouts }}</p>
+          <p><strong>Stolen Base:</strong> {{ playerData.stolen_base }}</p>
+          <p><strong>Caught Stealing:</strong> {{ playerData.caught_stealing }}</p>
+          <p><strong>AVG:</strong> {{ playerData.avg }}</p>
+          <p><strong>On-base Percentage:</strong> {{ playerData.on_base_percentage }}</p>
+          <p><strong>Slugging Percentage:</strong> {{ playerData.slugging_percentage }}</p>
+          <p><strong>On-base Plus Slugging:</strong> {{ playerData.on_base_plus_slugging }}</p>
         </MDBCol>
       </MDBRow>
 

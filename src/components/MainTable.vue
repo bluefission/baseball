@@ -26,26 +26,26 @@
       <tr v-for="(item, index) in tableData" :key="index">
         <td @click="$emit('selectPlayer', item)" 
             class="text-primary cursor-pointer">
-          {{ item['Player name'] }} 
+          {{ item.player_name }} 
           <!-- <span class="text-muted">(Click for details)</span> -->
         </td>
         <td>{{ item.position }}</td>
-        <td>{{ item.Games }}</td>
-        <td>{{ item['At-bat'] }}</td>
-        <td>{{ item.Runs }}</td>
-        <td>{{ item.Hits }}</td>
-        <td>{{ item['Double (2B)'] }}</td>
-        <td>{{ item['third baseman'] }}</td>
-        <td>{{ item['home run'] }}</td>
-        <td>{{ item['run batted in'] }}</td>
-        <td>{{ item['a walk'] }}</td>
-        <td>{{ item.Strikeouts }}</td>
-        <td>{{ item['stolen base'] }}</td>
-        <td>{{ item['Caught stealing'] }}</td>
-        <td>{{ item.AVG }}</td>
-        <td>{{ item['On-base Percentage'] }}</td>
-        <td>{{ item['Slugging Percentage'] }}</td>
-        <td>{{ item['On-base Plus Slugging'] }}</td>
+        <td>{{ item.games }}</td>
+        <td>{{ item.at_bat }}</td>
+        <td>{{ item.runs }}</td>
+        <td>{{ item.hits }}</td>
+        <td>{{ item.double_2b }}</td>
+        <td>{{ item.third_baseman }}</td>
+        <td>{{ item.home_run }}</td>
+        <td>{{ item.run_batted_in }}</td>
+        <td>{{ item.a_walk }}</td>
+        <td>{{ item.strikeouts }}</td>
+        <td>{{ item.stolen_base }}</td>
+        <td>{{ item.caught_stealing }}</td>
+        <td>{{ item.avg }}</td>
+        <td>{{ item.on_base_percentage }}</td>
+        <td>{{ item.slugging_percentage }}</td>
+        <td>{{ item.on_base_plus_slugging }}</td>
       </tr>
     </tbody>
   </MDBTable>

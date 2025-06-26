@@ -10,6 +10,7 @@
     "start": "vite --open"
   },
   "dependencies": {
+    "@vueuse/core": "^13.4.0",
     "mdb-vue-ui-kit": "6.0.0",
     "vue": "^3.2.40",
     "vue-router": "^4.1.5"

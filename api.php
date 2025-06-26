@@ -6,63 +6,181 @@ date_default_timezone_set('America/New_York');
 error_reporting(E_ALL);
 $autoloader = require 'vendor/autoload.php';
 
+// // Allow requests from your specific Vue frontend origin
+header("Access-Control-Allow-Origin: *"); 
+// // Allow the necessary HTTP methods (GET, POST, OPTIONS, etc.)
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+// // Allow the necessary headers (e.g., for authentication)
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+// // Handle preflight requests (OPTIONS method)
+// if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+//     exit(0);
+// }
+
 define('OPUS_ROOT', getcwd());
 
 use \BlueFission\Utils\Loader;
 use \BlueFission\Services\Application as App;
 use \BlueFission\Services\Service;
 use \BlueFission\Services\Request;
+use \BlueFission\Connections\Database\MySQLLink;
+use \BlueFission\Data\Storage\MySQLBulk;
+use \BlueFission\Data\Storage\Storage;
+use \BlueFission\Behavioral\Behaviors\State;
+use \BlueFission\Str;
+
+if(!function_exists('import_env_vars')) {
+	function import_env_vars( $file ) {
+		$variables = file($file);
+		foreach ($variables as $var) {
+			putenv(trim($var));
+			list($name, $value) = explode("=", $var);
+			$_ENV[$name] = $value;
+		}
+	}
+}
+
+if(!function_exists('env')) {
+  function env($key, $default = null)
+  {
+      $value = getenv($key);
+
+      if ($value === false) {
+          return $default;
+      }
+      return $value;
+  }
+}
+
+// Load environment variables from .env file
+$envFile = OPUS_ROOT . '/.env';
+if (file_exists($envFile)) {
+	import_env_vars($envFile);
+} else {
+	die("Environment file not found: $envFile");
+}
 
 // $loader = Loader::instance();
 // $loader->addPath(getcwd());
 
+$config = [
+	'target'=>env('MYSQL_DB_HOST', 'localhost'),
+	'username'=>env('MYSQL_DB_USERNAME'),
+	'password'=>env('MYSQL_DB_PASSWORD'),
+	'database'=>env('MYSQL_DB_NAME'),
+	'port'=>env('MYSQL_DB_PORT'),
+	'table'=>'',
+	'key'=>'_rowid',
+	'ignore_null'=>false,
+];
+$link = new MySQLLink($config);
+$link->open();
+
+$model = new MySQLBulk([
+	'location'=>$config['database'],
+	'name'=>'players',
+	'fields'=>[],
+	'auto_join'=>false,
+	'ignore_null'=>true,
+	'save_related_tables'=>false,
+]);
+
 class PlayerService extends Service {
 	private $players = [];
+	private $model;
 
-	public function __construct() {
-		parent::__construct('player');
+	public function __construct(Storage $model) {
+		parent::__construct();
 
-		$this->players = json_decode('[{"Player name":"B Bonds","position":"LF","Games":2986,"At-bat":9847,"Runs":2227,"Hits":2935,"Double (2B)":601,"third baseman":77,"home run":762,"run batted in":1996,"a walk":2558,"Strikeouts":1539,"stolen base":514,"Caught stealing":141,"AVG":0.298,"On-base Percentage":0.444,"Slugging Percentage":0.607,"On-base Plus Slugging":1.051},{"Player name":"H Aaron","position":"RF","Games":3298,"At-bat":12364,"Runs":2174,"Hits":3771,"Double (2B)":624,"third baseman":98,"home run":755,"run batted in":2297,"a walk":1402,"Strikeouts":1383,"stolen base":240,"Caught stealing":73,"AVG":0.305,"On-base Percentage":0.374,"Slugging Percentage":0.555,"On-base Plus Slugging":0.929},{"Player name":"B Ruth","position":"RF","Games":2504,"At-bat":8399,"Runs":2174,"Hits":2873,"Double (2B)":506,"third baseman":136,"home run":714,"run batted in":2213,"a walk":2062,"Strikeouts":1330,"stolen base":123,"Caught stealing":117,"AVG":0.342,"On-base Percentage":0.474,"Slugging Percentage":0.69,"On-base Plus Slugging":1.164},{"Player name":"A Pujols","position":"1B","Games":3080,"At-bat":11421,"Runs":1914,"Hits":3384,"Double (2B)":686,"third baseman":16,"home run":703,"run batted in":2218,"a walk":1373,"Strikeouts":1404,"stolen base":117,"Caught stealing":43,"AVG":0.296,"On-base Percentage":0.374,"Slugging Percentage":0.544,"On-base Plus Slugging":0.918}]');
+		$this->model = $model;
+		$this->model->activate();
+
+		///////////////////////////////////////////////////////
+		// Uncomment what's below to initialize the database //
+		///////////////////////////////////////////////////////
+
+		// $fields = $this->model->fields();
+		// $row = $this->model->limit(1)->read()->result()->first();
+
+		// if (count($fields) == 0 || !$row) {
+		// 	// Load players from the api
+		// 	$response = file_get_contents('https://api.hirefraction.com/api/test/baseball');
+		// 	$players = json_decode($response, true);
+
+		// 	$firstPlayer = $players[0] ?? null;
+		// 	$this->model->perform( State::DRAFT );
+		// 	$fields = [];
+		// 	foreach ($firstPlayer as $k=>$v) {
+		// 		$fields[Str::replace(Str::slugify($k), '-', '_')] = [];
+		// 	}
+		// 	$tables['players'] = $fields;
+		// 	$this->model->config('fields', $tables);
+		// 	if (is_array($players) && count($players) > 0) {
+
+		// 		// Set the fields based on the first player's data
+		// 		foreach ($players as $player) {
+		// 			// die(var_dump($firstPlayer));
+		// 			$this->model->clear();
+		// 			foreach ($player as $field => $value) {
+		// 				// Convert field names to lowercase and replace spaces with underscores
+		// 				$cleanField = Str::replace(Str::slugify($field), '-', '_');
+		// 				$this->model->field($cleanField, $value);
+		// 			}
+		// 			$this->model->write();
+		// 		}
+		// 	} else {
+		// 		die("Failed to load players from the API.");
+		// 	}
+		// 	$this->model->halt( State::DRAFT );
+		// }
+		$this->model->clear();
+		$this->model->limit(0, 1000);
 	}
 
 	public function getPlayers($data) {
-		return json_encode($this->players);
+		$this->players = $this->model->read()->result();
+
+		return json_encode($this->players->toArray());
 	}
 
 	public function getPlayer($id) {
-		if (isset($this->players[$id])) {
-			return json_encode($this->players[$id]);
+		$this->model->player_id = $id;
+		$player = $this->model->read()->result()->first();
+		if (isset($player)) {
+			return json_encode($player->data());
 		} else {
 			return json_encode(['error' => 'Player not found']);
 		}		
 	}
 
 	public function updatePlayer($id, $data) {
-		if (isset($this->players[$id])) {
-			$this->players[$id] = array_merge($this->players[$id], $data);
-			return json_encode(['success' => 'Player updated']);
+		$this->model->player_id = $id;
+		$player = $this->model->read()->result()->first();
+		if (isset($player)) {
+			$player->assign($data);
+			$player->write();
+			return json_encode(['success' => $player->status()]);
 		} else {
 			return json_encode(['error' => 'Player not found']);
 		}
 	}
 }
 
+$service = new PlayerService($model);
+
 $app = App::instance();
-$app->map('get', 'api/players', function() {
-	$playerService = new PlayerService();
-	$players = $playerService->getPlayers(null);
+$app->map('get', 'api/players', function() use ($service) {
+	$players = $service->getPlayers(null);
 	die($players);
 });
-$app->map('get', 'api/player/$id', function($id) {
-	$playerService = new PlayerService();
-	$player = $playerService->getPlayer($id);
+$app->map('get', 'api/player/$id', function($id) use ($service) {
+	$player = $service->getPlayer($id);
 	die($player);
 });
-$app->map('post', 'api/player/$id', function(Request $request, $id) {
+$app->map('post', 'api/player/$id', function(Request $request, $id) use ($service) {
 	$data = $request->all();
-	die(var_dump($data));
-	$playerService = new PlayerService();
-	$result = $playerService->updatePlayer($id, $data);
+	$result = $service->updatePlayer($id, $data);
 	die($result);
 });
 

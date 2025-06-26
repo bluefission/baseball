@@ -7,7 +7,7 @@
           type="text"
           label="Player Name"
           id="form6PlayerName"
-          v-model="playerForm['Player name']"
+          v-model="playerForm.player_name"
         />
       </MDBCol>
       <MDBCol>
@@ -27,7 +27,7 @@
           type="number"
           label="Games"
           id="form6Games"
-          v-model="playerForm.Games"
+          v-model="playerForm.games"
         />
       </MDBCol>
       <MDBCol>
@@ -35,7 +35,7 @@
           type="number"
           label="At-bat"
           id="form6AtBat"
-          v-model="playerForm['At-bat']"
+          v-model="playerForm.at_bat"
         />
       </MDBCol>
       <MDBCol>
@@ -43,7 +43,7 @@
           type="number"
           label="Runs"
           id="form6Runs"
-          v-model="playerForm.Runs"
+          v-model="playerForm.runs"
         />
       </MDBCol>
       <MDBCol>
@@ -51,7 +51,7 @@
           type="number"
           label="Hits"
           id="form6Hits"
-          v-model="playerForm.Hits"
+          v-model="playerForm.hits"
         />
       </MDBCol>
     </MDBRow>
@@ -63,7 +63,7 @@
           type="number"
           label="Double (2B)"
           id="form6Double"
-          v-model="playerForm['Double (2B)']"
+          v-model="playerForm.double_2b"
         />
       </MDBCol>
       <MDBCol>
@@ -71,7 +71,7 @@
           type="number"
           label="Third Baseman"
           id="form6ThirdBaseman"
-          v-model="playerForm['third baseman']"
+          v-model="playerForm.third_baseman"
         />
       </MDBCol>
       <MDBCol>
@@ -79,7 +79,7 @@
           type="number"
           label="Home Run"
           id="form6HomeRun"
-          v-model="playerForm['home run']"
+          v-model="playerForm.home_run"
         />
       </MDBCol>
       <MDBCol>
@@ -87,7 +87,7 @@
           type="number"
           label="Run Batted In"
           id="form6RBI"
-          v-model="playerForm['run batted in']"
+          v-model="playerForm.run_batted_in"
         />
       </MDBCol>
     </MDBRow>
@@ -99,7 +99,7 @@
           type="number"
           label="A Walk"
           id="form6Walk"
-          v-model="playerForm['a walk']"
+          v-model="playerForm.a_walk"
         />
       </MDBCol>
       <MDBCol>
@@ -107,7 +107,7 @@
           type="number"
           label="Strikeouts"
           id="form6Strikeouts"
-          v-model="playerForm.Strikeouts"
+          v-model="playerForm.strikeouts"
         />
       </MDBCol>
       <MDBCol>
@@ -115,7 +115,7 @@
           type="number"
           label="Stolen Base"
           id="form6StolenBase"
-          v-model="playerForm['stolen base']"
+          v-model="playerForm.stolen_base"
         />
       </MDBCol>
       <MDBCol>
@@ -123,7 +123,7 @@
           type="number"
           label="Caught Stealing"
           id="form6CaughtStealing"
-          v-model="playerForm['Caught stealing']"
+          v-model="playerForm.caught_stealing"
         />
       </MDBCol>
     </MDBRow>
@@ -135,7 +135,7 @@
           type="number"
           label="AVG"
           id="form6AVG"
-          v-model="playerForm.AVG"
+          v-model="playerForm.avg"
         />
       </MDBCol>
       <MDBCol>
@@ -143,7 +143,7 @@
           type="number"
           label="On-base Percentage"
           id="form6OnBasePercentage"
-          v-model="playerForm['On-base Percentage']"
+          v-model="playerForm.on_base_percentage"
         />
       </MDBCol>
       <MDBCol>
@@ -151,7 +151,7 @@
           type="number"
           label="Slugging Percentage"
           id="form6SluggingPercentage"
-          v-model="playerForm['Slugging Percentage']"
+          v-model="playerForm.slugging_percentage"
         />
       </MDBCol>
       <MDBCol>
@@ -159,7 +159,7 @@
           type="number"
           label="On-base Plus Slugging"
           id="form6OPS"
-          v-model="playerForm['On-base Plus Slugging']"
+          v-model="playerForm.on_base_plus_slugging"
         />
       </MDBCol>
     </MDBRow>
@@ -167,11 +167,11 @@
     <!-- Notes and Submit -->
     <MDBRow class="mb-4">
       <MDBCol>
-        <MDBInput
-          type="text"
+        <MDBTextarea 
+          rows="4"
           label="Notes"
           id="form6Notes"
-          v-model="playerForm.Notes"
+          v-model="playerForm.notes"
         />
       </MDBCol>
     </MDBRow>
@@ -187,31 +187,32 @@ import {
   MDBRow,
   MDBCol,
   MDBInput,
+  MDBTextarea,
   MDBBtn
 } from "mdb-vue-ui-kit";
 import { ref, defineProps, watch } from 'vue';
 
 // Unified object matching playerData structure
 const playerForm = ref({
-  "Player name": '',
+  player_name: '',
   position: '',
-  Games: 0,
-  "At-bat": 0,
-  Runs: 0,
-  Hits: 0,
-  "Double (2B)": 0,
-  "third baseman": 0,
-  "home run": 0,
-  "run batted in": 0,
-  "a walk": 0,
-  Strikeouts: 0,
-  "stolen base": 0,
-  "Caught stealing": 0,
-  AVG: 0,
-  "On-base Percentage": 0,
-  "Slugging Percentage": 0,
-  "On-base Plus Slugging": 0,
-  Notes: ''
+  games: 0,
+  at_bat: 0,
+  runs: 0,
+  hits: 0,
+  double_2b: 0,
+  third_baseman: 0,
+  home_run: 0,
+  run_batted_in: 0,
+  a_walk: 0,
+  strikeouts: 0,
+  stolen_base: 0,
+  caught_stealing: 0,
+  avg: 0,
+  on_base_percentage: 0,
+  slugging_percentage: 0,
+  on_base_plus_slugging: 0,
+  notes: ''
 });
 // Watch for changes in playerData prop
 const props = defineProps({
@@ -223,7 +224,8 @@ const props = defineProps({
 // Update playerForm with initial playerData
 watch(() => props.playerData, (newData) => {
   playerForm.value = { ...newData };
-});
+}, { immediate: true });
 // Emit event when form is submitted
 const emit = defineEmits(['submitPlayerData']);
+
 </script>
