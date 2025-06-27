@@ -1,4 +1,5 @@
 <template>
+  <h2> Edit Player Data </h2>
   <form>
     <!-- Player Name and Position -->
     <MDBRow class="mb-4">
@@ -176,7 +177,7 @@
       </MDBCol>
     </MDBRow>
 
-    <MDBBtn color="primary" block class="mb-4">
+    <MDBBtn color="primary" block class="mb-4" @click="$emit('submitPlayerData', playerForm)">
       Submit Player Data
     </MDBBtn>
   </form>

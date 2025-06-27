@@ -1,22 +1,23 @@
 <?php
 
+// Allow requests from your specific Vue frontend origin
+header("Access-Control-Allow-Origin: *"); 
+// Allow the necessary HTTP methods (GET, POST, OPTIONS, etc.)
+header("Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS");
+// Allow the necessary headers (e.g., for authentication)
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
 ini_set('display_errors', 1);
 set_time_limit(3000);
 date_default_timezone_set('America/New_York');
 error_reporting(E_ALL);
 $autoloader = require 'vendor/autoload.php';
 
-// // Allow requests from your specific Vue frontend origin
-header("Access-Control-Allow-Origin: *"); 
-// // Allow the necessary HTTP methods (GET, POST, OPTIONS, etc.)
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-// // Allow the necessary headers (e.g., for authentication)
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-
-// // Handle preflight requests (OPTIONS method)
-// if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-//     exit(0);
-// }
+// Handle preflight requests (OPTIONS method)
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    header('HTTP/1.1 200 OK');
+    exit(0);
+}
 
 define('OPUS_ROOT', getcwd());
 
@@ -29,6 +30,7 @@ use \BlueFission\Data\Storage\MySQLBulk;
 use \BlueFission\Data\Storage\Storage;
 use \BlueFission\Behavioral\Behaviors\State;
 use \BlueFission\Str;
+use \BlueFission\Connections\Curl;
 
 if(!function_exists('import_env_vars')) {
 	function import_env_vars( $file ) {
@@ -89,6 +91,7 @@ $model = new MySQLBulk([
 class PlayerService extends Service {
 	private $players = [];
 	private $model;
+	private $curl;
 
 	public function __construct(Storage $model) {
 		parent::__construct();
@@ -136,9 +139,22 @@ class PlayerService extends Service {
 		// }
 		$this->model->clear();
 		$this->model->limit(0, 1000);
+
+		$this->curl = new Curl([
+        'method' => 'post',
+    ]);
+
+    $headers = [
+        'Content-Type: application/json'
+    ];
+
+    $this->curl->config('headers', $headers);
+    $this->curl->config('target', 'http://localhost:5000/summary');
+    $this->curl->config('verbose', true);
 	}
 
 	public function getPlayers($data) {
+		$this->model->order('hits', 'desc');
 		$this->players = $this->model->read()->result();
 
 		return json_encode($this->players->toArray());
@@ -148,6 +164,11 @@ class PlayerService extends Service {
 		$this->model->player_id = $id;
 		$player = $this->model->read()->result()->first();
 		if (isset($player)) {
+			if (!isset($player->notes) || empty($player->notes)) {
+				// Generate notes if not already present
+				$player->notes = $this->generateNotes($player);
+				$this->updatePlayer($id, $player->data());
+			}
 			return json_encode($player->data());
 		} else {
 			return json_encode(['error' => 'Player not found']);
@@ -155,18 +176,47 @@ class PlayerService extends Service {
 	}
 
 	public function updatePlayer($id, $data) {
+		$this->model->clear();
 		$this->model->player_id = $id;
 		$player = $this->model->read()->result()->first();
 		if (isset($player)) {
-			$player->assign($data);
-			$player->write();
-			return json_encode(['success' => $player->status()]);
+			$this->model->assign($data);
+			$this->model->write();
+			return json_encode(['success' => $this->model->status()]);
 		} else {
 			return json_encode(['error' => 'Player not found']);
 		}
 	}
+
+	private function generateNotes($player)
+	{
+		$prompt = "Regard the following player's statistics:\n";
+		foreach ($player->data() as $key => $value) {
+			$prompt .= ucfirst($key) . ": " . $value . "\n";
+		}
+
+		$request_data = [
+      'prompt' => $prompt,
+    ];
+    
+		$this->curl->open();
+    $this->curl->query($request_data);
+    $response = $this->curl->result();
+    $this->curl->close();
+
+    $result = json_decode($response, true);
+
+    $output = "Summary: " . ($result['summary'] ?? 'No summary available') . "\n";
+    $output .= "Strengths: " . ($result['strengths'] ?? 'No strengths available') . "\n";
+    $output .= "Weaknesses: " . ($result['weaknesses'] ?? 'No weaknesses available') . "\n";
+    $output .= "Suggestions: " . ($result['strategy'] ?? 'No suggestions available') . "\n";
+		
+		return $output;
+	}
 }
 
+
+// Actual application
 $service = new PlayerService($model);
 
 $app = App::instance();
@@ -178,7 +228,7 @@ $app->map('get', 'api/player/$id', function($id) use ($service) {
 	$player = $service->getPlayer($id);
 	die($player);
 });
-$app->map('post', 'api/player/$id', function(Request $request, $id) use ($service) {
+$app->map('put', 'api/player/$id', function(Request $request, $id) use ($service) {
 	$data = $request->all();
 	$result = $service->updatePlayer($id, $data);
 	die($result);
