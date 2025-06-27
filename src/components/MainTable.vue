@@ -8,6 +8,7 @@
         <th>At-bat</th>
         <th>Runs</th>
         <th>Hits</th>
+        <th>Hits Per Game</th>
         <th>Double (2B)</th>
         <th>Third Baseman</th>
         <th>Home Run</th>
@@ -34,6 +35,7 @@
         <td>{{ item.at_bat }}</td>
         <td>{{ item.runs }}</td>
         <td>{{ item.hits }}</td>
+        <td>{{ item.hits_per_game }}</td>
         <td>{{ item.double_2b }}</td>
         <td>{{ item.third_baseman }}</td>
         <td>{{ item.home_run }}</td>
@@ -70,6 +72,19 @@ const emit = defineEmits(['selectPlayer']);
 const tableData = ref(props.tableData);
 // Watch for changes in tableData prop
 watch(() => props.tableData, (newData) => {
+
+  // Calculate hits per game for each player
+  newData.forEach(player => {
+    if (player.games > 0) {
+      player.hits_per_game = (player.hits / player.games).toFixed(2);
+    } else {
+      player.hits_per_game = 0;
+    }
+  });
+
+  // Sort by hits per game
+  newData.sort((a, b) => b.hits_per_game - a.hits_per_game);
+
   tableData.value = newData;
 });
 </script>

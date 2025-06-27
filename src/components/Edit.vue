@@ -57,6 +57,18 @@
       </MDBCol>
     </MDBRow>
 
+    <MDBRow class="mb-2">
+      <MDBCol md="3">
+        <MDBInput
+          type="number"
+          label="Hits per Game"
+          id="form6HitsPerGame"
+          v-model="playerForm.hits_per_game"
+          step="0.01"
+        />
+      </MDBCol>
+    </MDBRow>
+
     <!-- Doubles, Third Baseman, Home Runs, RBIs -->
     <MDBRow class="mb-2">
       <MDBCol>

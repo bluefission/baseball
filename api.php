@@ -1,5 +1,4 @@
 <?php
-
 // Allow requests from your specific Vue frontend origin
 header("Access-Control-Allow-Origin: *"); 
 // Allow the necessary HTTP methods (GET, POST, OPTIONS, etc.)

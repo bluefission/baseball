@@ -25,6 +25,7 @@
           <p><strong>At-bat:</strong> {{ playerData.at_bat }}</p>
           <p><strong>Runs:</strong> {{ playerData.runs }}</p>
           <p><strong>Hits:</strong> {{ playerData.hits }}</p>
+          <p><strong>Hits Per Game:</strong> {{ playerData.hits_per_game }}</p>
           <p><strong>Double (2B):</strong> {{ playerData.double_2b }}</p>
           <p><strong>Third Baseman:</strong> {{ playerData.third_baseman }}</p>
           <p><strong>Home Run:</strong> {{ playerData.home_run }}</p>
@@ -69,6 +70,13 @@ const playerData = ref(props.playerData);
 
 // Keep playerData reactive to prop updates
 watch(() => props.playerData, (newData) => {
+  // hits per game calculation
+  if (newData.games > 0) {
+    newData.hits_per_game = (newData.hits / newData.games).toFixed(2);
+  } else {
+    newData.hits_per_game = 0;
+  }
+
   playerData.value = newData;
 });
 </script>
